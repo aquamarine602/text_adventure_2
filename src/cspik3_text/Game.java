@@ -53,19 +53,101 @@ public class Game {
 		out.println("The last memory you have is of\nyour head hitting your pillow.");
 		
 		// tutorial	-- asks if user wants tutorial and gives tutorial
-		tutorial(location, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present, paper_read, up);
+		boolean tutorial = tutorial(input);
+		if (tutorial == true) {
+			out.println("\n\nUse 'look' to study your surroundings.\n"
+					+ "Use 'take (object)' to add an object to your inventory.\n"
+					+ "Use 'open (object)' to open an object.\n"
+					+ "Use 'go (direction)' to move.\n"
+					+ "Use 'attack (object)' to attack or destroy an object.\n"
+					+ "Use 'read (object)' to read an object.");
+		}
 		
 		while (true) {
-			user_input(location, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present, paper_read, up);
+			// user types in verb and possible noun
+			out.print("\n\n>");
+			String words = input.nextLine();
+			words = words + " " + " ";		// makes sure noun can be empty
+				
+			// gets index of spaces
+			int space = words.indexOf(" ");
+			int last_space = words.lastIndexOf(" ");
+				
+			// declares user's verb and noun
+			String verb = words.substring(0, space);
+			String noun = words.substring(space + 1, last_space);
+			verb.toLowerCase();
+			noun.toLowerCase();
+
+			if (verb.equals("look")) {
+				out.println(location);
+				
+			} else if (verb.equals("take")) {
+				boolean boo1 = noun_check(noun);
+				if (boo1 == true) {
+					if (noun.equals("box ")) {
+						box = take(input, noun, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present);
+					} else if (noun.equals("lamp ")) {
+						lamp = take(input, noun, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present);
+					} else if (noun.equals("bulb ")) {
+						bulb = take(input, noun, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present);
+					} else if (noun.equals("hammer ")) {
+						hammer = take(input, noun, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present);
+					} else if (noun.equals("stool ")) {
+						stool = take(input, noun, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present);
+					} else if (noun.equals("paper ")) {
+						paper = take(input, noun, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present);
+					}
+				}
+				
+			} else if (verb.equals("open")) {
+				boolean boo1 = false;
+				if (noun.equals("safe ")) {
+					if (paper_read == true) {
+						boo1 = true;
+					} else {
+						out.println("/n/nYou stare at the closed safe.\n"
+								+ "Don't safes need passwords?");
+					}
+				} else {
+					boo1 = noun_check(noun);
+				}
+				
+				if (boo1 == true) {
+					if (noun.equals("safe ")) {
+						stool_present = open(noun, box, bulb, paper_read, stool_present, hammer_present);
+						
+					} else if (noun.equals("box ")) {
+						hammer_present = open(noun, box, bulb, paper_read, stool_present, hammer_present);
+						
+					} else if (noun.equals("bulb ")) {
+						out.println("\n\nTry breaking the bulb.");
+						
+					} else {
+						out.println("\n\nYou can't open " + noun + ".");
+					}
+				}
+				
+			} else if (verb.equals("go")) {
+				location = go(location, noun, box, lamp, bulb_present, stool_present, up);
+				
+			} else if (verb.equals("attack")) {
+				bulb_present = attack(noun, bulb, bulb_present);
+				
+			} else if (verb.equals("read")) {
+				paper_read = read(noun, paper_read, paper);
+				
+			} else {
+				out.println("I don't know '" + verb + "'.");
+			}
 		}
 		
 	}
 	
-	public static void tutorial(String location, boolean box, boolean lamp, boolean bulb, boolean hammer, boolean stool, boolean paper, boolean bulb_present, boolean hammer_present, boolean stool_present, boolean paper_present, boolean paper_read, boolean up) {
-		Scanner input = new Scanner(System.in);
+	public static boolean tutorial(Scanner input) {
 		
 		// asks if user wants the tutorial
-		out.println("\n\nWould you like the tutorial?");
+		out.println("\n\nWould you like to hear the instructions?");
 		out.print(">");
 		String tutorial_ans = input.nextLine();
 		tutorial_ans.toLowerCase();
@@ -91,97 +173,9 @@ public class Game {
 			}
 		}
 		
-		// if the user wanted the tutorial
-		if (tutorial == true) {
-			out.println("\n\nType 'look' to study your surroundings.");
-			
-			user_input(location, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present, paper_read, up);
-		}
+		return tutorial;
 	}
-	
-	public static void user_input(String location, boolean box, boolean lamp, boolean bulb, boolean hammer, boolean stool, boolean paper, boolean bulb_present, boolean hammer_present, boolean stool_present, boolean paper_present, boolean paper_read, boolean up) {
-		Scanner input = new Scanner(System.in);
-		
-		// user types in verb and possible noun
-		out.print(">");
-		String words = input.nextLine();
-		words = words + " " + " ";		// makes sure noun can be empty
-			
-		// gets index of spaces
-		int space = words.indexOf(" ");
-		int last_space = words.lastIndexOf(" ");
-			
-		// declares user's verb and noun
-		String verb = words.substring(0, space);
-		String noun = words.substring(space + 1, last_space);
-		verb.toLowerCase();
-		noun.toLowerCase();
 
-		if (verb.equals("look")) {
-			out.println(location);
-			
-		} else if (verb.equals("take")) {
-			boolean boo1 = noun_check(noun);
-			if (boo1 == true) {
-				if (noun.equals("box ")) {
-					box = take(input, noun, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present);
-				} else if (noun.equals("lamp ")) {
-					lamp = take(input, noun, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present);
-				} else if (noun.equals("bulb ")) {
-					bulb = take(input, noun, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present);
-				} else if (noun.equals("hammer ")) {
-					hammer = take(input, noun, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present);
-				} else if (noun.equals("stool ")) {
-					stool = take(input, noun, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present);
-				} else if (noun.equals("paper ")) {
-					paper = take(input, noun, box, lamp, bulb, hammer, stool, paper, bulb_present, hammer_present, stool_present, paper_present);
-				}
-			}
-			
-		} else if (verb.equals("open")) {
-			boolean boo1 = false;
-			if (noun.equals("safe ")) {
-				if (paper_read == true) {
-					boo1 = true;
-				} else {
-					out.println("/n/nYou stare at the closed safe.\n"
-							+ "Don't safes need passwords?");
-				}
-			} else {
-				boo1 = noun_check(noun);
-			}
-			
-			if (boo1 == true) {
-				if (noun.equals("safe ")) {
-					stool_present = open(noun, box, bulb, paper_read, stool_present, hammer_present);
-					
-				} else if (noun.equals("box ")) {
-					hammer_present = open(noun, box, bulb, paper_read, stool_present, hammer_present);
-					
-				} else if (noun.equals("bulb ")) {
-					out.println("\n\nTry breaking the bulb.");
-					
-				} else {
-					out.println("\n\nYou can't open " + noun + ".");
-				}
-			}
-			
-		} else if (verb.equals("go")) {
-			location = go(location, noun, box, lamp, bulb_present, stool_present, up);
-			
-		} else if (verb.equals("attack")) {
-			boolean returned = attack(noun, bulb, bulb_present);
-			bulb = returned;
-			bulb_present = returned;
-			
-		} else if (verb.equals("read")) {
-			paper_read = read(noun, paper_read, paper);
-			
-		} else {
-			out.println("I don't know '" + verb + "'.");
-		}
-			
-		}
 	
 	public static boolean noun_check(String one) {
 		boolean boo1 = true;
@@ -420,8 +414,6 @@ public class Game {
 	public static boolean attack(String noun, boolean bulb_present, boolean bulb) {
 		Scanner input = new Scanner(System.in);
 		
-		boolean returned = true;
-		
 		boolean boo1 = false;
 		if (noun.equals("self")) {
 			boo1 = true;
@@ -442,23 +434,24 @@ public class Game {
 			if (boo2 == true) {
 				
 			if (noun.equals("bulb ")) {
-				if (bulb_present == true) {
 				if (bulb == true) {
+					if (bulb_present == true) {
 						if (noun2.equals("hammer ")) {
 							out.println("\n\nThe bulb bursts as as the hammer\n"
 									+ "comes in contact with it.\n"
 									+ "A small leaf of paper flies out from\n"
 									+ "where the bulb once was.");
-							returned = false;
+							bulb_present = false;
 						} else {
 							out.println("\n\nTry attacking the bulb with the hammer.");
 						}
+					} else {
+						out.println("The bulb is already broken.");
+					}
 				} else {
-					out.println("\n\nYou don't have the bulb.");
+					out.println("You don't have the bulb.");
 				}
-				} else {
-					out.println("\n\nThe bulb is already broken.");
-				}
+				
 			} else if (noun.equals("self")) {
 				out.println("\n\nYou kill yourself with " + noun2 + ".");
 				out.println("\nThat's one way to escape.");
@@ -471,7 +464,7 @@ public class Game {
 			}
 		}
 		
-		return returned;
+		return bulb_present;
 	}
 	
 	public static boolean read(String noun, boolean paper_read, boolean paper) {
